@@ -1,28 +1,33 @@
 import streamlit as st
 import tensorflow as tf
-from tensorflow.keras.models import load_model
 import numpy as np
 from PIL import Image
 import os
 import zipfile
 import tempfile
+from keras.layers import TFSMLayer  # Needed for SavedModel with Keras 3+
 
 st.set_page_config(page_title="Jean-O-Type", layout="centered")
 st.markdown("<h1 style='text-align: center;'>JEAN-O-TYPE CLASSIFIER 👖🦖</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>Upload a photo of jeans to discover your denim!</p>", unsafe_allow_html=True)
 
-import zipfile
-import tempfile
+model = None
 
-stream = st.file_uploader('TF.Keras model file (.h5py.zip)', type='zip')
+stream = st.file_uploader('TF.Keras model file (.zip of SavedModel)', type='zip')
 if stream is not None:
-  myzipfile = zipfile.ZipFile(stream)
-  with tempfile.TemporaryDirectory() as tmp_dir:
-    myzipfile.extractall(tmp_dir)
-    root_folder = myzipfile.namelist()[0] # e.g. "model.h5py"
-    model_dir = os.path.join(tmp_dir, root_folder)
-    #st.info(f'trying to load model from tmp dir {model_dir}...')
-    model = tf.keras.models.load_model(model_dir)
+    with zipfile.ZipFile(stream) as myzipfile:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            myzipfile.extractall(tmp_dir)
+            contents = myzipfile.namelist()
+            root_folder = contents[0].split('/')[0]
+            model_dir = os.path.join(tmp_dir, root_folder)
+            
+            # Try to load as a SavedModel using TFSMLayer
+            try:
+                model = TFSMLayer(model_dir, call_endpoint="serving_default")
+                st.success("Model loaded using TFSMLayer (SavedModel format)")
+            except Exception as e:
+                st.error(f"Failed to load model: {e}")
 
 # jean class info (customize this)
 jean_labels = ['Baggy', 'Bootcut', 'Skinny', 'Straight', 'Wide-Leg']
@@ -57,7 +62,7 @@ jean_descriptions = {
 
 uploaded_file = st.file_uploader("Upload your jean image", type=["jpg", "jpeg", "png"])
 
-if uploaded_file:
+if uploaded_file and model is not None:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Your uploaded image", width=300)
 
@@ -66,8 +71,8 @@ if uploaded_file:
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Predict
-    predictions = model.predict(img_array)[0]
+    # Predict (TFSMLayer returns a tensor directly)
+    predictions = model(img_array).numpy()[0]
     top2_indices = predictions.argsort()[-2:][::-1]
 
     primary = jean_labels[top2_indices[0]]
@@ -85,3 +90,5 @@ if uploaded_file:
     st.markdown("---")
     st.markdown(f"💡 Second guess: **{secondary}** ({second_conf:.2f}%)")
     st.markdown(f"*{jean_descriptions[secondary]['desc']}* — **{jean_descriptions[secondary]['trending years']}**")
+elif uploaded_file and model is None:
+    st.warning("Please upload a model file before analyzing an image.")
