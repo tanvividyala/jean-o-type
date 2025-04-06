@@ -5,7 +5,7 @@ from PIL import Image
 import os
 import zipfile
 import tempfile
-from keras.layers import TFSMLayer  # Needed for SavedModel with Keras 3+
+from keras.layers import TFSMLayer  
 
 st.set_page_config(page_title="Jean-O-Type", layout="centered")
 st.markdown("<h1 style='text-align: center;'>JEAN-O-TYPE CLASSIFIER 👖🦖</h1>", unsafe_allow_html=True)
@@ -22,7 +22,6 @@ if stream is not None:
             root_folder = contents[0].split('/')[0]
             model_dir = os.path.join(tmp_dir, root_folder)
             
-            # Try to load as a SavedModel using TFSMLayer
             try:
                 model = TFSMLayer(model_dir, call_endpoint="serving_default")
                 st.success("Model loaded using TFSMLayer (SavedModel format)")
@@ -85,14 +84,27 @@ if uploaded_file and model is not None:
     second_conf = predictions[top2_indices[1]] * 100
 
     # Output results
-    st.markdown(f"### 🎉 You got: **{primary}** ({confidence:.2f}% confidence)")
-    st.markdown(f"👖 Description: *{jean_descriptions[primary]['desc']}*")
-    st.markdown(f"🕰️ Popular in: **{jean_descriptions[primary]['trending years']}**")
-    st.image(f"dino_pics/{jean_descriptions[primary]['dino_img']}", caption="Dino rocking the style!", width=300)
+    st.markdown(
+        f"""
+        <div style="text-align:center;">
+            <h3>🎉 You got: <strong>{primary}</strong> ({confidence:.2f}% confidence)</h3>
+            <p>👖 <em>{jean_descriptions[primary]['desc']}</em></p>
+            <p>🕰️ Popular in: <strong>{jean_descriptions[primary]['trending years']}</strong></p>
+            <img src="dino_pics/{jean_descriptions[primary]['dino_img']}" width="300" alt="Dino Image">
+            <p style="margin-top: 5px;">Dino rocking the style!</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Show runner-up
     st.markdown("---")
-    st.markdown(f"💡 Second guess: **{secondary}** ({second_conf:.2f}%)")
-    st.markdown(f"*{jean_descriptions[secondary]['desc']}* — **{jean_descriptions[secondary]['trending years']}**")
-elif uploaded_file and model is None:
-    st.warning("Please upload a model file before analyzing an image.")
+    st.markdown(
+        f"""
+        <div style="text-align:center;">
+            <p>💡 Second guess: <strong>{secondary}</strong> ({second_conf:.2f}%)</p>
+            <p><em>{jean_descriptions[secondary]['desc']}</em> — <strong>{jean_descriptions[secondary]['trending years']}</strong></p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
