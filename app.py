@@ -8,21 +8,6 @@ import zipfile
 import tempfile
 
 st.set_page_config(page_title="👖🦖", layout="centered")
-
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #FDFDFB;
-    }
-    .stApp {
-        background-color: #FDFDFB;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 st.markdown("<h1 style='text-align: center;'>JEAN-O-TYPE CLASSIFIER 👖🦖</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>Upload a photo of jeans to discover your denim destiny!</p>", unsafe_allow_html=True)
 
