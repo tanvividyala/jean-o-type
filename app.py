@@ -9,7 +9,14 @@ from keras.layers import TFSMLayer
 
 st.set_page_config(page_title="Jean-O-Type", layout="centered")
 st.markdown("<h1 style='text-align: center;'>JEAN-O-TYPE CLASSIFIER 👖🦖</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center;'>Upload a photo of jeans to discover your denim!</p>", unsafe_allow_html=True)
+st.markdown(
+    "<p style='text-align: center;'>"
+    "Upload a photo of jeans to discover your denim! "
+    "Download the trained jeans-recognition model we created "
+    "<a href='https://github.com/tanvividyala/jean-o-type/blob/main/jean_fit_classifier_model.zip'>here</a>"
+    "</p>", 
+    unsafe_allow_html=True
+)
 
 model = None
 
