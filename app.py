@@ -35,7 +35,6 @@ if stream is not None:
             except Exception as e:
                 st.error(f"Failed to load model: {e}")
 
-# jean class info (customize this)
 jean_labels = ['Baggy', 'Bootcut', 'Skinny', 'Straight', 'Wide-Leg']
 
 jean_descriptions = {
@@ -70,14 +69,14 @@ uploaded_file = st.file_uploader("Upload your jean image", type=["jpg", "jpeg", 
 
 if uploaded_file and model is not None:
     image = Image.open(uploaded_file).convert("RGB")
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
     st.image(image, caption="Your uploaded image", width=300)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Preprocess image
     img = image.resize((224, 224))
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Predict (TFSMLayer returns a tensor OR a dict)
     raw_output = model(img_array)
     if isinstance(raw_output, dict):
         predictions = list(raw_output.values())[0].numpy()[0]
@@ -90,13 +89,14 @@ if uploaded_file and model is not None:
     confidence = predictions[top2_indices[0]] * 100
     second_conf = predictions[top2_indices[1]] * 100
 
-    # Output results
     st.markdown(f"### 🎉 You got: **{primary}** ({confidence:.2f}% confidence)")
     st.markdown(f"👖 Description: *{jean_descriptions[primary]['desc']}*")
     st.markdown(f"🕰️ Popular in: **{jean_descriptions[primary]['trending years']}**")
-    st.image(f"dino_pics/{jean_descriptions[primary]['dino_img']}", caption="Dino rocking the style!", width=300)
 
-    # Show runner-up
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    st.image(f"dino_pics/{jean_descriptions[primary]['dino_img']}", caption="Dino rocking the style!", width=300)
+    st.markdown("</div>", unsafe_allow_html=True)
+
     st.markdown("---")
     st.markdown(f"💡 Second guess: **{secondary}** ({second_conf:.2f}%)")
     st.markdown(f"*{jean_descriptions[secondary]['desc']}* — **{jean_descriptions[secondary]['trending years']}**")
