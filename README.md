@@ -1,4 +1,4 @@
-# Jean-O-Type
+# Jean-O-Type 📈👖
 
 From the 1950s to today, jeans have remained a timeless symbol of style and self-expression in pop culture. In this project, we explore the world of denim, analyzing how different styles of jeans have trended across decades.
 
