@@ -71,10 +71,14 @@ if uploaded_file and model is not None:
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Predict (TFSMLayer returns a tensor directly)
-    predictions = model(img_array).numpy()[0]
-    top2_indices = predictions.argsort()[-2:][::-1]
+    # Predict (TFSMLayer returns a tensor OR a dict)
+    raw_output = model(img_array)
+    if isinstance(raw_output, dict):
+        predictions = list(raw_output.values())[0].numpy()[0]
+    else:
+        predictions = raw_output.numpy()[0]
 
+    top2_indices = predictions.argsort()[-2:][::-1]
     primary = jean_labels[top2_indices[0]]
     secondary = jean_labels[top2_indices[1]]
     confidence = predictions[top2_indices[0]] * 100
