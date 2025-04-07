@@ -4,7 +4,7 @@ import plotly.express as px
 import os
 
 st.set_page_config(page_title="Jean Trend Comparison", layout="centered")
-st.markdown("<h1 style='text-align: center;'>Compare Jean Style Trends 📈👖</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>COMPARE JEAN STYLE TRENDS 📈👖</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>Select one or more styles to compare their monthly popularity since 2004.</p>", unsafe_allow_html=True)
 
 # Folder with CSV files
