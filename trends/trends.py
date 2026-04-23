@@ -15,7 +15,7 @@ csv_files = [f for f in os.listdir(csv_folder) if f.endswith(".csv")]
 selected_files = st.multiselect("Select jean styles to compare:", sorted(csv_files))
 
 if selected_files:
-    combined_df = pd.DataFrame()
+    frames = []
 
     for file in selected_files:
         style_name = file.replace(".csv", "").replace("-", " ").title()
@@ -23,7 +23,9 @@ if selected_files:
         df.columns = [col.strip() for col in df.columns]
         df["Month"] = pd.to_datetime(df["Month"], format="%Y-%m")
         df["Style"] = style_name
-        combined_df = pd.concat([combined_df, df], ignore_index=True)
+        frames.append(df)
+
+    combined_df = pd.concat(frames, ignore_index=True)
 
     # Plot all styles with no markers and thinner lines
     fig = px.line(
